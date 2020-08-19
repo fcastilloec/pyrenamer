@@ -36,7 +36,7 @@ except:
 
 try:
     import gconf
-    HAS_GCONF = True
+    HAS_GCONF = False
 except:
     HAS_GCONF = False
 
