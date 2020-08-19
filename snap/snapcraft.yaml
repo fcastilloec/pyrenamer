@@ -1,0 +1,96 @@
+name: pyrenamer-snap
+base: core18
+version: '0.6.0-1.2'
+summary: Mass file renamer written in PyGTK
+description: |
+ Mass file renamer written in PyGTK
+ You can rename files using patterns, search and replace, substitutions, insert or delete text, or even rename files manually.
+ You can also rename images using their EXIF tags and music using their internal tags.
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+
+parts:
+  pyrenamer:
+    plugin: autotools
+    source: .
+    source-type: git
+    build-packages:
+      - gnome-common
+      - intltool
+      - libgconf2-dev
+      - python-gtk2-dev
+    stage-packages:
+      # - python-gconf
+      - python-glade2
+      - python-gtk2
+      - python-hachoir-metadata
+      - python
+    after:
+      - desktop-gtk2
+
+  desktop-gtk2:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk2"]
+    build-packages:
+      - build-essential
+      - libgtk2.0-dev
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgtk2.0-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk2.0-bin
+      - unity-gtk2-module
+      - locales-all
+      - libappindicator1
+      - xdg-user-dirs
+      - ibus-gtk
+      - libibus-1.0-5
+
+apps:
+  pyrenamer:
+    # extensions: [gnome-3-28]
+    command: desktop-launch pyrenamer
+    # desktop: usr/share/applications/pyrenamer.desktop
+    environment:
+      # Fallback to XWayland if running in a Wayland session.
+      DISABLE_WAYLAND: 1
+    plugs:
+      - gsettings
+      - home
+      - removable-media
+      - desktop
+      - desktop-legacy
+      - opengl
+      - unity7
+      - x11
+
+plugs:
+  gtk-2-engines:
+    interface: content
+    target: $SNAP/lib/gtk-2.0
+    default-provider: gtk2-common-themes
+  gtk-2-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
